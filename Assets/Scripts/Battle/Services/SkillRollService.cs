@@ -11,15 +11,15 @@ namespace Battle.Services
 
         public void Roll(UnitState unit, int count)
         {
-            var pool = new List<SkillDefinition>(unit.SkillPool);
+            var skillPool = new List<SkillDefinition>(unit.SkillPool);
 
-            for (int i = pool.Count - 1; i > 0; i--)
+            for (int currentIndex = skillPool.Count - 1; currentIndex > 0; currentIndex--)
             {
-                int j = _random.Next(i + 1);
-                (pool[i], pool[j]) = (pool[j], pool[i]);
+                int nextIndex = _random.Next(currentIndex + 1);
+                (skillPool[currentIndex], skillPool[nextIndex]) = (skillPool[nextIndex], skillPool[currentIndex]);
             }
 
-            unit.CurrentSkills = pool.GetRange(0, Math.Min(count, pool.Count));
+            unit.CurrentSkills = skillPool.GetRange(0, Math.Min(count, skillPool.Count));
         }
     }
 }
