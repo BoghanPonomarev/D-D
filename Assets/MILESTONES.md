@@ -1,9 +1,11 @@
-# Phase 1 — Iterative Implementation Guide
+# SliceDungeon — Full Implementation Guide
 
 Each iteration below is one Claude Code session.
 Copy the prompt block, paste it into the terminal, verify the milestone before moving on.
 
 ---
+
+# Phase 1 — Core Logic (plain C#, no Unity scene)
 
 ## Iteration 1 — Data structures and events
 
@@ -106,6 +108,168 @@ Also create the minimum required ScriptableObject assets to make it run:
 
 ✅ **Main Phase 1 milestone:** press Play, see a full battle in the console from start to finish with a declared winner.
 If the log looks correct — Phase 1 is done, move on to Phase 2.
+
+---
+
+# Phase 2 — Formation and Visuals
+
+## Iteration 6 — Formation layout
+
+**Prompt:**
+```
+Create the formation layout for the battle scene.
+Read README.md before starting.
+
+File to create:
+- Presentation/FormationLayout.cs
+
+Requirements:
+- 4 slots on the left side of the screen for heroes (positions 0-3, front to back)
+- 4 slots on the right side for enemies (positions 0-3, front to back)
+- slots are Transform references assigned in the Inspector
+- expose: PlaceUnit(UnitState state, GameObject prefab), GetSlotPosition(int index, bool isHero)
+- no battle logic inside this class
+```
+
+✅ **Milestone:** 8 empty slots are visible in the scene arranged in two lines facing each other.
+
+---
+
+## Iteration 7 — UnitView
+
+**Prompt:**
+```
+Create UnitView.cs for the visual representation of a single unit.
+Read README.md before starting.
+
+File: Presentation/UnitView.cs
+
+Requirements:
+- MonoBehaviour attached to each unit's GameObject in the scene
+- displays: unit name (TextMeshPro label), HP bar (UI Slider or simple scale), sprite (SpriteRenderer)
+- exposes:
+  - Initialize(UnitState state)
+  - UpdateHp(int current, int max)
+  - PlayDeathAnimation()
+- death animation: simple fade out or scale to zero using a coroutine
+- no battle logic inside this class
+```
+
+✅ **Milestone:** units appear in the scene with visible names and HP bars.
+
+---
+
+## Iteration 8 — BattleController (auto mode)
+
+**Prompt:**
+```
+Create BattleController.cs connecting core battle logic to the presentation layer.
+Read README.md before starting.
+
+File: Presentation/BattleController.cs
+
+Requirements:
+- MonoBehaviour, entry point for the battle scene
+- on Start: use BattleFactory.Create() then BattleFlowController.StartBattle()
+- use FormationLayout to place UnitViews into correct slots on scene start
+- subscribe to BattleFlowController.OnEvent and route each event:
+  - DamageDealt  → target UnitView.UpdateHp()
+  - HealApplied  → target UnitView.UpdateHp()
+  - UnitDied     → target UnitView.PlayDeathAnimation()
+  - BattleEnded  → show a win/lose text label on screen
+- for now all units are AI-controlled (heroes use BattleAI too)
+- no battle rules inside this class
+```
+
+✅ **Milestone:** press Play, the battle runs automatically, HP bars decrease, units die visually, winner is announced.
+
+---
+
+# Phase 3 — Player Input
+
+## Iteration 9 — Skill buttons and target selection
+
+**Prompt:**
+```
+Add player input to the battle. Read README.md before starting.
+
+Files to create / modify:
+- Presentation/SkillButtonPanel.cs  (new)
+- Presentation/BattleController.cs  (modify)
+
+SkillButtonPanel requirements:
+- shows 3 buttons, one per skill in currentUnit.CurrentSkills
+- each button displays the skill name and a short description
+- clicking a button selects that skill and enters target-selection mode
+- in target-selection mode enemy UnitViews become clickable and visually highlighted
+- clicking a target calls BattleController.SubmitAction(skill, target)
+- panel is hidden when it is not the player's turn
+
+BattleController changes:
+- when TurnStarted fires for a hero: show SkillButtonPanel, pause AI processing
+- when TurnStarted fires for an enemy: hide SkillButtonPanel, let BattleAI act immediately
+- SubmitAction(skill, target): build a BattleAction and call BattleFlowController.SubmitPlayerAction()
+```
+
+✅ **Milestone:** skill buttons appear on hero turns, clicking a skill then a target resolves the action. Enemies respond automatically on their turns.
+
+---
+
+# Phase 4 — Content and Polish
+
+## Iteration 10 — Action log
+
+**Prompt:**
+```
+Create ActionLog.cs as a scrollable UI text log.
+Read README.md before starting.
+
+File: Presentation/ActionLog.cs
+
+Requirements:
+- ScrollRect with TextMeshPro entries
+- subscribes to BattleFlowController.OnEvent
+- formats each event as a readable line:
+  - DamageDealt  → "{source} hits {target} for {value} damage"
+  - HealApplied  → "{source} heals {target} for {value} HP"
+  - UnitDied     → "{target} has died"
+  - SkillsRolled → "{unit} draws: {skill1}, {skill2}, {skill3}"
+  - BattleEnded  → "=== VICTORY ===" or "=== DEFEAT ==="
+- auto-scrolls to the latest entry after each addition
+- keeps a maximum of 50 entries, removes the oldest when exceeded
+```
+
+✅ **Milestone:** a live scrollable log in the corner of the screen shows every battle event in plain English.
+
+---
+
+## Iteration 11 — More content
+
+**Prompt:**
+```
+Create additional ScriptableObject content assets and wire up a proper EncounterDefinition.
+Read README.md before starting.
+
+Create the following assets:
+Skills:
+- Strike         (single enemy, 10 damage)
+- Heavy Strike   (single enemy, 18 damage)
+- Quick Slash    (single enemy, 7 damage)
+- Heal           (single ally, restore 12 HP)
+- Cleave         (all enemies, 6 damage)
+
+Unit definitions:
+- Warrior    (HP 60, Speed 8,  skills: Strike, Heavy Strike, Cleave)
+- Cleric     (HP 45, Speed 6,  skills: Strike, Heal, Heal)
+- Goblin     (HP 30, Speed 10, skills: Strike, Quick Slash)
+- Orc Brute  (HP 55, Speed 4,  skills: Heavy Strike, Heavy Strike, Strike)
+
+Encounter definition:
+- Heroes:  Warrior (slot 0), Cleric (slot 1)
+- Enemies: Goblin (slot 0), Orc Brute (slot 1)
+```
+
+✅ **Milestone:** a complete playable encounter with meaningful unit variety and skill choices.
 
 ---
 
