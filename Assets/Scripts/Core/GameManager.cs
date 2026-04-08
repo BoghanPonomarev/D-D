@@ -14,7 +14,9 @@ public class GameManager : MonoBehaviour
     public LocalizationManager Localization { get; private set; }
     public TimeManager GameTime { get; private set; }
     public ResidentManager Residents { get; private set; }
-
+    
+    public BuildingManager BuildingManager { get; private set; }
+    
     StateMachine stateMachine;
 
     void Awake()
@@ -34,6 +36,7 @@ public class GameManager : MonoBehaviour
         Localization = GetComponentInChildren<LocalizationManager>();
         GameTime = GetComponentInChildren<TimeManager>();
         Residents = GetComponentInChildren<ResidentManager>();
+        BuildingManager = GetComponentInChildren<BuildingManager>();
 
         stateMachine = new StateMachine();
         stateMachine.ChangeState(new InitState(this));

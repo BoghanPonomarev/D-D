@@ -2,5 +2,10 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-    public void Initialize() { }
+    [SerializeField] public BuildingCatalog buildingCatalog;
+
+    public void Initialize()
+    {
+        buildingCatalog.Initialize();
+    }
 }

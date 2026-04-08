@@ -11,7 +11,7 @@ public class InitState : GameState
         gameManager.Localization.Initialize();
         gameManager.GameTime.Initialize();
         gameManager.Residents.Initialize();
-
+        
         gameManager.TransitionTo(new GameplayState(gameManager));
     }
 

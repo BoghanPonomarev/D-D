@@ -7,7 +7,7 @@ namespace Building
 {
     public class BuildableCellsFactory
     {
-        private const int CellsSlotsLength = 10;
+        public const int CellsSlotsLength = 10;
         private const int StartCellXIndex = -3;
 
         private readonly Tilemap buildableCellsTileMap;
@@ -26,7 +26,8 @@ namespace Building
             {
                 CellData cellData = ScriptableObject.CreateInstance<CellData>();
                 Vector3Int currentCellPosition = new Vector3Int(currentXIndex, -1, 0);
-                
+
+                cellData.orderId = currentXIndex + 3;
                 cellData.worldToCellPosition = currentCellPosition;
                 cellData.centerWorldPosition = buildableCellsTileMap.GetCellCenterWorld(currentCellPosition);
             
