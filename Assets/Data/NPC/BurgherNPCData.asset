@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a3532df364595049a7ba91d9f67e4db, type: 3}
+  m_Name: BurgherNPCData
+  m_EditorClassIdentifier: 
+  archetypeId: Burgher
+  prefab: {fileID: 5757323184123336577, guid: c1cf8e7e6625bb245b9c56f3dbe28a27, type: 3}
+  moveSpeed: 2
+  stopDistance: 0.5
+  waitDurationMin: 1
+  waitDurationMax: 3
+  waitChancePerWaypoint: 0
